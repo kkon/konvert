@@ -7,6 +7,11 @@ all:
 test: all
 	cd build && ctest ..; cd ..; ./build/test/konvert-test
 
+profile: all
+	valgrind --tool=cachegrind --branch-sim=yes --cachegrind-out-file=build/cache-profile.txt ./build/test/konvert-pf
+	cg_annotate --auto=yes build/cache-profile.txt
+	qcachegrind build/cache-profile.txt
+
 bench: all
 	./build/bench/konvert-bench
 

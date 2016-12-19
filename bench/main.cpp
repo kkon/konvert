@@ -14,6 +14,35 @@ int main() {
   std::cout << "Hello, World!" << std::endl;
 
   /**
+   * Benchmark int to string conversion
+   */
+
+  int ints[] = { 42, -1, 1600066666, -666, 0, -502345535, 26026, 4, 1999999990 };
+
+  const char *hint =
+    "you should not see this output because (==43) is never true, "
+    "it's just used to avoid compiler optimisation in the benchmark\n";
+
+  char str[16]  = "";
+  char cstr[16] = "";
+
+  for(auto const value: ints){
+
+    time_compare(
+      1000000u, "int -> string: " +  std::to_string(value),
+
+      func("sprintf",   [&]{ if( sprintf(str, "%d", value) == 43      ) printf("%s\n",hint); }),
+      func("to_str",    [&]{ if( *std::to_string(value).c_str() == 43 ) printf("%s\n",hint); }),
+      func("konvert",   [&]{ if( konvert::itoa(value, cstr) == 43     ) printf("%s\n",hint); })
+    );
+
+    { std::cout << "konvert   : " << konvert::itoa(value, cstr) << " = \"" << cstr << "\"\n"
+                << "sprintf   : " << sprintf(str, "%d", value)  << " = \"" << str  << "\"\n"
+                << "to_string : \"" << std::to_string(value) << "\"\n"; }
+  }
+
+
+  /**
    * Benchmark konvert::atoi vs system alternatives
    * - atoi
    * - sscanf("%d")
@@ -27,14 +56,11 @@ int main() {
   unsigned long separation = 14;
   auto pos = str_ints;
 
-  const char *hint =
-    "you should not see this output because (==43) is never true, "
-    "it's just used to avoid compiler optimisation in the benchmark\n";
 
   for(auto t=0; t<15; t++) {
 
     time_compare(
-      10000000u, "Convert int value: " +  std::string(pos,separation),
+      1000000u, "string -> int: " +  std::string(pos,separation),
 
       func("konvert",   [&]{ if( konvert::atoi(pos) == 43 )       printf("%s\n",hint); }),
       func("atoi",      [&]{ if( atoi(pos) == 43 )                printf("%s\n",hint); }),
@@ -45,10 +71,11 @@ int main() {
     );
 
     { int scanfres; sscanf(pos, "%d", &scanfres);
-      std::cout << "konvert : " << konvert::atoi(pos)      << std::endl
-                << "atoi    : " << atoi(pos)               << std::endl
-                << "strtol  : " << strtol(pos, nullptr,10) << std::endl
-                << "sscanf  : " << scanfres                << std::endl; }
+      std::cout << "konvert   : " << konvert::atoi(pos)      << std::endl
+                << "konvert_l : " << konvert::atol(pos)      << std::endl
+                << "atoi      : " << atoi(pos)               << std::endl
+                << "strtol    : " << strtol(pos, nullptr,10) << std::endl
+                << "sscanf    : " << scanfres                << std::endl; }
 
     pos += separation;
   }
@@ -69,7 +96,7 @@ int main() {
   for(auto t=0; t<15; t++){
 
     time_compare(
-      10000000u, "Convert double value " + std::string(pos,separation),
+      1000000u, "string -> double: " + std::string(pos,separation),
 
       func("konvert", [&]{ if( konvert::atof(pos) == 43.0 )   printf("%s\n",hint); }),
       func("atof",    [&]{ if( atof(pos) == 43.0 )            printf("%s\n",hint); }),

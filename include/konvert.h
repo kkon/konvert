@@ -26,6 +26,7 @@
 
 #include <math.h>
 #include <inttypes.h>
+#include <initializer_list>
 
 namespace konvert {
 
@@ -79,11 +80,13 @@ namespace konvert {
     }
   }
 
-  /** Parse an int from char array. */
-  inline int atoi(const char *ch){
+
+  /** Parse an integral type from char array. */
+  template <typename itype, typename utype>
+  inline itype atoi(const char *ch){
     unsigned char cx[4];
     uint32_t *xcx  = (uint32_t *)cx;
-    unsigned res;
+    utype res;
     int sign = (*ch == '-') ? -1 : 1;
     if(sign<0) ch++;
 
@@ -99,6 +102,41 @@ namespace konvert {
       if( cx[3] <= 9 ) res = res*10 + cx[3]; else return res * sign;
     }
   }
+
+
+  /** Parse a long from char array. */
+  inline int
+  atoi(const char *ch) { return atoi<int,unsigned>(ch); }
+
+  inline long
+  atol(const char *ch) { return atoi<long int,unsigned long>(ch); }
+
+  inline long long int
+  atoll(const char *ch){ return atoi<long long int,unsigned long long>(ch); }
+
+
+  /** Convert int to string */
+  inline int itoa(int ivalue, char *str){
+    bool started = false;
+    int num_chars = 1;
+    unsigned value;
+    char char_digit;
+
+    if(ivalue < 0){ value = (unsigned)(-ivalue); *str++ ='-'; num_chars++; }
+    else value = (unsigned)ivalue;
+
+    for(const unsigned &cmp: {1000000000u,100000000u,10000000u,1000000u,100000u,10000u,1000u,100u,10u}){
+      char_digit = '0';
+      while(value >= cmp){ value -= cmp; char_digit++; started = true; }
+      if(started) {*str++ = char_digit; num_chars++;}
+    }
+
+    *str++ = char('0' + value);
+    *str = '\0';
+    return num_chars;
+  }
+
+
 }
 
 #endif
