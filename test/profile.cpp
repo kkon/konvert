@@ -1,7 +1,7 @@
 #include <cstring>
 #include <stdlib.h>
 #include "profile_data.h"
-#include "../include/konvert.h"
+#include "konvert.h"
 
 
 int main(){

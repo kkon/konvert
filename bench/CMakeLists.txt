@@ -5,4 +5,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -O3 -pedantic")
 set(SOURCE_FILES main.cpp lbench.h)
 
 add_executable(konvert-bench ${SOURCE_FILES})
+target_link_libraries(konvert-bench konvert)
 set_property(TARGET konvert-bench PROPERTY CXX_STANDARD 14)

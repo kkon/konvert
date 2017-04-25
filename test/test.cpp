@@ -2,7 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include "../include/konvert.h"
+#include "konvert.h"
 
 
 bool compare_doubles(double a, double b){
